@@ -1,53 +1,83 @@
-# Simple Telegram Bot (aiogram 3 + PostgreSQL)
+# Telegram User Bot
 
-Учебный Telegram-бот на Python. Один файл, без классов, FSM и middleware — только основы.
+Минималистичный Telegram-бот на **aiogram 3** с асинхронным хранением пользователей в **PostgreSQL**. Реализован в одном файле без излишней архитектуры — удобен как учебный пример или стартовая точка для собственного проекта.
 
-## Возможности
+## Стек технологий
 
-- `/start` — сохраняет пользователя в PostgreSQL (если его ещё нет) и приветствует
-- `/users` — список всех пользователей из базы
-- `/count` — количество пользователей
+| Компонент | Версия / Библиотека |
+|---|---|
+| Язык | Python 3.10+ |
+| Telegram Framework | [aiogram 3](https://docs.aiogram.dev/) |
+| База данных | PostgreSQL |
+| Драйвер БД | [asyncpg](https://github.com/MagicStack/asyncpg) |
 
-## Стек
+## Функциональность
 
-- Python 3.10+
-- [aiogram 3](https://docs.aiogram.dev/)
-- [asyncpg](https://github.com/MagicStack/asyncpg)
-- PostgreSQL
+| Команда | Описание |
+|---|---|
+| `/start` | Регистрирует пользователя в базе данных (если он ещё не зарегистрирован) и отправляет приветствие |
+| `/users` | Выводит список всех зарегистрированных пользователей |
+| `/count` | Показывает общее количество пользователей в базе |
+
+## Требования
+
+- Python 3.10 или новее
+- Доступный сервер PostgreSQL
+- Токен Telegram-бота ([@BotFather](https://t.me/BotFather))
 
 ## Установка
 
-\`\`\`bash
-git clone <ссылка на репозиторий>
-cd <папка проекта>
+```bash
+git clone <repository-url>
+cd <project-folder>
+pip install -r requirements.txt
+```
+
+или напрямую:
+
+```bash
 pip install aiogram asyncpg
-\`\`\`
+```
 
-## Настройка
+## Конфигурация
 
-Открой `main.py` и укажи в начале файла:
+Все настройки задаются в начале файла `main.py`:
 
-\`\`\`python
-TOKEN = "..."         # токен бота от @BotFather
-DB_NAME = "..."
-DB_USER = "..."
-DB_PASSWORD = "..."
+```python
+TOKEN = "your-telegram-bot-token"
+
+DB_NAME = "your-database-name"
+DB_USER = "your-database-user"
+DB_PASSWORD = "your-database-password"
 DB_HOST = "localhost"
 DB_PORT = "5432"
-\`\`\`
+```
 
-Таблица `users` создастся автоматически при первом запуске.
+Таблица `users` создаётся автоматически при первом запуске — дополнительная миграция не требуется.
 
 ## Запуск
 
-\`\`\`bash
+```bash
 python3 main.py
-\`\`\`
+```
 
-## Структура БД
+## Схема базы данных
 
-| Поле        | Тип    | Описание                    |
-|-------------|--------|------------------------------|
-| id          | SERIAL | Первичный ключ               |
-| telegram_id | BIGINT | ID пользователя в Telegram   |
-| full_name   | TEXT   | Имя пользователя              |
+Таблица `users`:
+
+| Поле | Тип | Описание |
+|---|---|---|
+| `id` | `SERIAL PRIMARY KEY` | Уникальный идентификатор записи |
+| `telegram_id` | `BIGINT UNIQUE NOT NULL` | Идентификатор пользователя в Telegram |
+| `full_name` | `TEXT NOT NULL` | Отображаемое имя пользователя |
+
+## Особенности реализации
+
+- Весь код находится в одном файле `main.py`
+- Все операции с базой данных выполняются асинхронно через `asyncpg`
+- Без использования FSM, middleware, роутеров и клавиатур — только базовые обработчики команд
+- Подробные комментарии в коде для лёгкого понимания
+
+## Лицензия
+
+MIT
